@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "藍瓶與 LiLo 手沖實驗室",
+  "short_name": "藍瓶LiLo",
+  "description": "藍瓶與 LiLo 手沖參數調整與互動計算工具，可離線使用。",
+  "lang": "zh-Hant",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#faf8f5",
+  "theme_color": "#00a4e4",
+  "icons": [
+    {"src":"./icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"./icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"}
+  ]
+}

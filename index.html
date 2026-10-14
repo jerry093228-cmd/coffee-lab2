@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hant"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Blue Bottle × LiLo 專屬手沖調整實驗室 (v14.4 離線自癒版)</title>
+<meta name="theme-color" content="#00a4e4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="藍瓶LiLo實驗室">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+
+<style>
+    :root {
+      --bb-blue: #00a4e4;
+      --bb-blue-dark: #007fb0;
+      --bg-warm: #faf8f5;
+      --card-bg: #ffffff;
+      --text-main: #2c2724;
+      --border-col: #e7e5e4;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0; padding: 14px;
+      background-color: var(--bg-warm); color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+    }
+    .app-container { max-width: 1160px; margin: 0 auto; }
+    .card-box {
+      background: #ffffff; border: 1px solid var(--border-col);
+      border-radius: 16px; padding: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03); margin-bottom: 16px;
+    }
+    input[type="range"] { width: 100%; accent-color: var(--bb-blue); cursor: pointer; height: 6px; border-radius: 4px; }
+    .bean-card {
+      transition: all 0.2s ease; background: #ffffff; border: 2px solid var(--border-col);
+      border-radius: 14px; padding: 14px; cursor: pointer; position: relative;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .bean-card:hover { border-color: #bae6fd; }
+    .bean-card.active { border-color: var(--bb-blue); background-color: #f0f9ff; box-shadow: 0 4px 14px rgba(0, 164, 228, 0.14); }
+    .mode-btn {
+      background: #ffffff; border: 1px solid var(--border-col); border-radius: 10px;
+      padding: 8px 6px; cursor: pointer; transition: all 0.15s ease;
+    }
+    .mode-btn.active { background-color: var(--bb-blue); color: #ffffff !important; border-color: var(--bb-blue); }
+    .bar-fill { transition: width 0.35s ease; }
+    svg { display: block; width: 100%; height: auto; overflow: visible; }
+    .guide-table { width: 100%; border-collapse: collapse; font-size: 12px; background: #ffffff; border-radius: 8px; overflow: hidden; }
+    .guide-table th { background: #e0f2fe; color: #0369a1; font-weight: 700; padding: 8px 10px; text-align: left; border-bottom: 1px solid #bae6fd; }
+    .guide-table td { padding: 8px 10px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+    .guide-table tr:last-child td { border-bottom: none; }
+    .guide-table tr.active-row td { background-color: #f0f9ff; }
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(28, 25, 23, 0.55); backdrop-filter: blur(3px);
+      z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-backdrop.hidden { display: none !important; }
+    .form-input { width: 100%; padding: 8px 10px; border: 1px solid #d6d3d1; border-radius: 8px; font-size: 13px; background: #fff; color: #1c1917; }
+    .form-input:focus { outline: none; border-color: var(--bb-blue); box-shadow: 0 0 0 2px rgba(0, 164, 228, 0.15); }
+    .independent-box { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 2px solid #cbd5e1; border-radius: 14px; padding: 14px; }
+    .cup-pill {
+      background: #ffffff; border: 1px solid #cbd5e1; color: #475569; border-radius: 999px;
+      padding: 6px 10px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.15s ease;
+    }
+    .cup-pill:hover, .cup-pill.active { background: #007fb0; color: #ffffff; border-color: #007fb0; }
+  </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.m-0{margin:0px}.mx-auto{margin-left:auto;margin-right:auto}.my-1{margin-top:0.25rem;margin-bottom:0.25rem}.my-1\.5{margin-top:0.375rem;margin-bottom:0.375rem}.\!mb-0{margin-bottom:0px !important}.mb-0\.5{margin-bottom:0.125rem}.mb-1{margin-bottom:0.25rem}.mb-1\.5{margin-bottom:0.375rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-5{margin-bottom:1.25rem}.ml-1{margin-left:0.25rem}.ml-auto{margin-left:auto}.mt-0\.5{margin-top:0.125rem}.mt-1{margin-top:0.25rem}.mt-1\.5{margin-top:0.375rem}.mt-2{margin-top:0.5rem}.mt-2\.5{margin-top:0.625rem}.mt-3{margin-top:0.75rem}.mt-4{margin-top:1rem}.mt-5{margin-top:1.25rem}.mb-0{margin-bottom:0px}.line-clamp-2{overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-5{height:1.25rem}.h-full{height:100%}.max-h-\[92vh\]{max-height:92vh}.w-full{width:100%}.max-w-6xl{max-width:72rem}.max-w-lg{max-width:32rem}.shrink-0{flex-shrink:0}.cursor-pointer{cursor:pointer}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.grid-cols-5{grid-template-columns:repeat(5, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.items-baseline{align-items:baseline}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-1\.5{gap:0.375rem}.gap-2{gap:0.5rem}.gap-2\.5{gap:0.625rem}.gap-3{gap:0.75rem}.gap-5{gap:1.25rem}.space-y-2\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.625rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.625rem * var(--tw-space-y-reverse))}.space-y-3\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.875rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.875rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-0{border-width:0px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-emerald-200{--tw-border-opacity:1;border-color:rgb(167 243 208 / var(--tw-border-opacity, 1))}.border-sky-100{--tw-border-opacity:1;border-color:rgb(224 242 254 / var(--tw-border-opacity, 1))}.border-sky-200{--tw-border-opacity:1;border-color:rgb(186 230 253 / var(--tw-border-opacity, 1))}.border-sky-300{--tw-border-opacity:1;border-color:rgb(125 211 252 / var(--tw-border-opacity, 1))}.border-stone-100{--tw-border-opacity:1;border-color:rgb(245 245 244 / var(--tw-border-opacity, 1))}.border-stone-200{--tw-border-opacity:1;border-color:rgb(231 229 228 / var(--tw-border-opacity, 1))}.bg-amber-50{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity, 1))}.bg-emerald-100{--tw-bg-opacity:1;background-color:rgb(209 250 229 / var(--tw-bg-opacity, 1))}.bg-emerald-50{--tw-bg-opacity:1;background-color:rgb(236 253 245 / var(--tw-bg-opacity, 1))}.bg-rose-100{--tw-bg-opacity:1;background-color:rgb(255 228 230 / var(--tw-bg-opacity, 1))}.bg-rose-50{--tw-bg-opacity:1;background-color:rgb(255 241 242 / var(--tw-bg-opacity, 1))}.bg-sky-100{--tw-bg-opacity:1;background-color:rgb(224 242 254 / var(--tw-bg-opacity, 1))}.bg-sky-50{--tw-bg-opacity:1;background-color:rgb(240 249 255 / var(--tw-bg-opacity, 1))}.bg-sky-50\/70{background-color:rgb(240 249 255 / 0.7)}.bg-sky-50\/80{background-color:rgb(240 249 255 / 0.8)}.bg-stone-100{--tw-bg-opacity:1;background-color:rgb(245 245 244 / var(--tw-bg-opacity, 1))}.bg-stone-50{--tw-bg-opacity:1;background-color:rgb(250 250 249 / var(--tw-bg-opacity, 1))}.bg-stone-50\/60{background-color:rgb(250 250 249 / 0.6)}.bg-transparent{background-color:transparent}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.p-2{padding:0.5rem}.p-2\.5{padding:0.625rem}.p-3{padding:0.75rem}.p-3\.5{padding:0.875rem}.p-5{padding:1.25rem}.px-1{padding-left:0.25rem;padding-right:0.25rem}.px-1\.5{padding-left:0.375rem;padding-right:0.375rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.pb-3{padding-bottom:0.75rem}.pb-4{padding-bottom:1rem}.pt-2{padding-top:0.5rem}.pt-2\.5{padding-top:0.625rem}.pt-3{padding-top:0.75rem}.pt-1\.5{padding-top:0.375rem}.text-center{text-align:center}.text-right{text-align:right}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-medium{font-weight:500}.font-semibold{font-weight:600}.font-normal{font-weight:400}.uppercase{text-transform:uppercase}.leading-relaxed{line-height:1.625}.leading-snug{line-height:1.375}.tracking-tight{letter-spacing:-0.025em}.tracking-wider{letter-spacing:0.05em}.text-\[\#007fb0\]{--tw-text-opacity:1;color:rgb(0 127 176 / var(--tw-text-opacity, 1))}.text-\[\#00a4e4\]{--tw-text-opacity:1;color:rgb(0 164 228 / var(--tw-text-opacity, 1))}.text-amber-600{--tw-text-opacity:1;color:rgb(217 119 6 / var(--tw-text-opacity, 1))}.text-amber-700{--tw-text-opacity:1;color:rgb(180 83 9 / var(--tw-text-opacity, 1))}.text-amber-800{--tw-text-opacity:1;color:rgb(146 64 14 / var(--tw-text-opacity, 1))}.text-emerald-600{--tw-text-opacity:1;color:rgb(5 150 105 / var(--tw-text-opacity, 1))}.text-emerald-700{--tw-text-opacity:1;color:rgb(4 120 87 / var(--tw-text-opacity, 1))}.text-emerald-950{--tw-text-opacity:1;color:rgb(2 44 34 / var(--tw-text-opacity, 1))}.text-purple-600{--tw-text-opacity:1;color:rgb(147 51 234 / var(--tw-text-opacity, 1))}.text-rose-600{--tw-text-opacity:1;color:rgb(225 29 72 / var(--tw-text-opacity, 1))}.text-rose-700{--tw-text-opacity:1;color:rgb(190 18 60 / var(--tw-text-opacity, 1))}.text-rose-800{--tw-text-opacity:1;color:rgb(159 18 57 / var(--tw-text-opacity, 1))}.text-sky-800{--tw-text-opacity:1;color:rgb(7 89 133 / var(--tw-text-opacity, 1))}.text-sky-900{--tw-text-opacity:1;color:rgb(12 74 110 / var(--tw-text-opacity, 1))}.text-stone-400{--tw-text-opacity:1;color:rgb(168 162 158 / var(--tw-text-opacity, 1))}.text-stone-500{--tw-text-opacity:1;color:rgb(120 113 108 / var(--tw-text-opacity, 1))}.text-stone-600{--tw-text-opacity:1;color:rgb(87 83 78 / var(--tw-text-opacity, 1))}.text-stone-700{--tw-text-opacity:1;color:rgb(68 64 60 / var(--tw-text-opacity, 1))}.text-stone-800{--tw-text-opacity:1;color:rgb(41 37 36 / var(--tw-text-opacity, 1))}.text-stone-900{--tw-text-opacity:1;color:rgb(28 25 23 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.opacity-80{opacity:0.8}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.hover\:bg-emerald-100:hover{--tw-bg-opacity:1;background-color:rgb(209 250 229 / var(--tw-bg-opacity, 1))}.hover\:bg-sky-200:hover{--tw-bg-opacity:1;background-color:rgb(186 230 253 / var(--tw-bg-opacity, 1))}.hover\:bg-sky-100:hover{--tw-bg-opacity:1;background-color:rgb(224 242 254 / var(--tw-bg-opacity, 1))}.hover\:bg-sky-50\/60:hover{background-color:rgb(240 249 255 / 0.6)}.hover\:text-stone-700:hover{--tw-text-opacity:1;color:rgb(68 64 60 / var(--tw-text-opacity, 1))}@media (min-width: 640px){.sm\:col-span-2{grid-column:span 2 / span 2}.sm\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.sm\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}}@media (min-width: 768px){.md\:p-6{padding:1.5rem}.md\:text-2xl{font-size:1.5rem;line-height:2rem}.md\:text-base{font-size:1rem;line-height:1.5rem}}@media (min-width: 1024px){.lg\:col-span-5{grid-column:span 5 / span 5}.lg\:col-span-7{grid-column:span 7 / span 7}.lg\:w-auto{width:auto}.lg\:grid-cols-12{grid-template-columns:repeat(12, minmax(0, 1fr))}.lg\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.lg\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.lg\:flex-row{flex-direction:row}.lg\:items-center{align-items:center}}</style></head>
+<body class="p-3 md:p-6">
+<div class="app-container max-w-6xl mx-auto">
+<!-- 頂部標題列 -->
+<header class="flex flex-col lg:flex-row justify-between items-start lg:items-center pb-4 mb-4 border-b border-stone-200 gap-3">
+<div class="flex items-center gap-3">
+<div class="text-white font-bold text-xl shrink-0 shadow-sm" style="background:#00a4e4; width:40px; height:40px; border-radius:999px; display:flex; align-items:center; justify-content:center;">☕</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h1 class="text-lg md:text-2xl font-bold tracking-tight text-stone-800 m-0">藍瓶系統 × 心齋橋 LiLo 手沖實驗室</h1>
+<span class="font-bold" style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:99px; font-size:11px;">🔬 v14.4 離線自癒版</span>
+</div>
+<p class="text-xs text-stone-500 mt-0.5 m-0">磨豆機：<b>CLITON KMDJ-12AW (1–40 檔)</b> ｜ 實測吸水：<b>18g粉吸50g水 (2.78倍)</b></p>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+<button class="px-3 py-2 rounded-xl font-extrabold text-xs shadow-sm transition flex items-center gap-1 cursor-pointer border-0" onclick="restoreThreeBeans10gGold()" style="background:#f59e0b; color:#1c1917;" type="button"><span>🏆</span> 一鍵還原黃金 20%</button>
+<button class="px-3 py-2 rounded-xl font-semibold text-xs shadow-sm transition flex items-center gap-1 cursor-pointer border-0" onclick="openBeanModal(null)" style="background:#059669; color:#fff;" type="button"><span>➕</span> 新增咖啡豆</button>
+<button class="px-3 py-2 rounded-xl font-semibold text-xs shadow-sm transition flex items-center gap-1 cursor-pointer border-0" onclick="saveCurrentSlidersToBean()" style="background:#00a4e4; color:#fff;" type="button"><span>📌</span> 記住此設定</button>
+<button class="px-3 py-2 rounded-xl font-semibold text-xs shadow-sm transition flex items-center gap-1 cursor-pointer border-0" onclick="downloadStandaloneApp()" style="background:#292524; color:#fef3c7;" type="button"><span>📲</span> 下載專案檔</button>
+</div>
+</header>
+<div class="hidden mb-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs shadow-sm" id="save-toast">
+<div class="flex justify-between items-start gap-2"><span id="save-toast-text"></span><button class="text-emerald-700 font-bold px-1 cursor-pointer bg-transparent border-0" onclick="document.getElementById('save-toast').classList.add('hidden')" type="button">✕</button></div>
+</div>
+<!-- 1. 咖啡豆選擇區 -->
+<section class="mb-5">
+<div class="flex justify-between items-center mb-2">
+<div class="text-xs font-bold uppercase tracking-wider text-stone-500">STEP 1. 選擇你的專屬咖啡豆 (點擊載入該豆黃金參數)</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="bean-cards-container">
+<div class="bean-card active" onclick="selectBean('bella', true)">
+<div>
+<div class="flex justify-between items-center mb-1 gap-1">
+<span class="px-2 py-0.5 text-[11px] font-semibold rounded" style="background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:4px;">藍瓶經典中焙</span>
+<span class="text-xs font-mono text-stone-500 font-semibold">21檔/90°C</span>
+</div>
+<h3 class="font-bold text-sm md:text-base text-stone-800 m-0 mt-1 leading-snug">藍瓶 貝拉多諾萬 (Bella Donovan)</h3>
+<p class="text-xs text-stone-500 mt-1 mb-0 line-clamp-2">衣索比亞 × 蘇門答臘｜覆盆子果醬、黑巧克力、蜜糖醇厚感</p>
+</div>
+<div class="mt-2 pt-1.5 border-t border-stone-100 flex justify-between items-center text-[11px] text-stone-500">
+<span>粉 10g ｜ 水 155g</span>
+<span class="text-[#007fb0] font-semibold">● 使用中</span>
+</div>
+</div>
+<div class="bean-card" onclick="selectBean('hayes', true)">
+<div>
+<div class="flex justify-between items-center mb-1 gap-1">
+<span class="px-2 py-0.5 text-[11px] font-semibold rounded" style="background:#292524; color:#fde68a; padding:2px 6px; border-radius:4px;">藍瓶深焙配方</span>
+<span class="text-xs font-mono text-stone-500 font-semibold">25檔/85°C</span>
+</div>
+<h3 class="font-bold text-sm md:text-base text-stone-800 m-0 mt-1 leading-snug">藍瓶 海斯谷 (Hayes Valley)</h3>
+<p class="text-xs text-stone-500 mt-1 mb-0 line-clamp-2">經典義式深焙手沖｜烘焙可可、焦糖橙皮、極高油脂感與低酸度</p>
+</div>
+<div class="mt-2 pt-1.5 border-t border-stone-100 flex justify-between items-center text-[11px] text-stone-500">
+<span>粉 10g ｜ 水 140g</span>
+<span class="text-[#007fb0] font-semibold">點擊載入</span>
+</div>
+</div>
+<div class="bean-card" onclick="selectBean('lilo', true)">
+<div>
+<div class="flex justify-between items-center mb-1 gap-1">
+<span class="px-2 py-0.5 text-[11px] font-semibold rounded" style="background:#ffe4e6; color:#be123c; padding:2px 6px; border-radius:4px;">大阪心齋橋・淺焙</span>
+<span class="text-xs font-mono text-stone-500 font-semibold">18檔/93°C</span>
+</div>
+<h3 class="font-bold text-sm md:text-base text-stone-800 m-0 mt-1 leading-snug">心齋橋 LiLo — Colorful Blend</h3>
+<p class="text-xs text-stone-500 mt-1 mb-0 line-clamp-2">日本職人繽紛果香｜熱帶水果、柑橘花香、果汁般明亮酸甜感</p>
+</div>
+<div class="mt-2 pt-1.5 border-t border-stone-100 flex justify-between items-center text-[11px] text-stone-500">
+<span>粉 10g ｜ 水 160g</span>
+<span class="text-[#007fb0] font-semibold">點擊載入</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 頂部 4 張關鍵數據診斷卡 -->
+<section class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+<div class="card-box !mb-0">
+<div class="text-xs text-stone-400 font-medium">最終萃取率 (Extraction Yield)</div>
+<div class="text-xl md:text-2xl font-extrabold text-stone-800 mt-1" id="kpi-ey">20.0%</div>
+<span class="inline-block mt-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-700" id="kpi-status">✨ 金杯完美萃取區間</span>
+</div>
+<div class="card-box !mb-0">
+<div class="text-xs text-stone-400 font-medium">實際咖啡濃度 (TDS)</div>
+<div class="text-xl md:text-2xl font-extrabold text-stone-800 mt-1" id="kpi-tds">1.57%</div>
+<div class="text-xs text-stone-500 mt-1.5" id="kpi-tds-desc">黃金濃度標準</div>
+</div>
+<div class="card-box !mb-0">
+<div class="text-xs text-stone-400 font-medium">總注水量 ➔ 實際入杯咖啡液</div>
+<div class="text-xl md:text-2xl font-extrabold text-[#00a4e4] mt-1" id="kpi-water-out" style="color:#00a4e4;">155g ➔ 127mL</div>
+<div class="text-xs text-stone-500 mt-1.5" id="kpi-water-desc">實測吸水 28g｜流速 1.65 mL/s</div>
+</div>
+<div class="card-box !mb-0">
+<div class="text-xs text-stone-400 font-medium">杯測風味診斷 / 預計時間</div>
+<div class="text-sm md:text-base font-bold text-stone-800 mt-1" id="kpi-flavor">覆盆子果醬、黑巧克力、蜜糖醇厚感</div>
+<div class="text-xs text-stone-500 mt-1.5" id="kpi-advice">預計 1分34秒｜完美金杯！</div>
+</div>
+</section>
+<!-- 主體：左側控制面板 + 右側圖表與總表 -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+<!-- 左側控制面板 (5 欄) -->
+<div class="lg:col-span-5 card-box !mb-0 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-center mb-3">
+<h2 class="text-base font-bold text-stone-800 m-0 flex items-center gap-1.5"><span>⚙️</span> 容量與參數精密調整台</h2>
+<button class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-sky-100 text-sky-800 hover:bg-sky-200 transition border-0 cursor-pointer" onclick="saveCurrentSlidersToBean()" type="button">📌 記住此設定</button>
+</div>
+<!-- 容量快捷選項 (一鍵綁定 20% 黃金萃取率) -->
+<div class="mb-4 p-3.5 rounded-xl bg-sky-50/80 border border-sky-300 shadow-sm" style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:12px;">
+<div class="text-xs font-bold text-sky-900 mb-2">🎯 目標容量快捷選項 (一鍵鎖定 20% 黃金杯)</div>
+<div class="grid grid-cols-4 gap-1.5 mb-3">
+<button class="cup-pill text-center py-1.5" onclick="setTargetBeverageMl(150)" type="button">獨享 150mL</button>
+<button class="cup-pill text-center py-1.5" onclick="setTargetBeverageMl(220)" type="button">標準 220mL</button>
+<button class="cup-pill text-center py-1.5" onclick="setTargetBeverageMl(300)" type="button">馬克 300mL</button>
+<button class="cup-pill text-center py-1.5" onclick="setTargetBeverageMl(400)" type="button">雙人 400mL</button>
+</div>
+<div class="flex justify-between items-baseline mb-1 pt-2 border-t border-sky-200">
+<label class="text-sm font-bold text-sky-900" for="total-water">💧 電子秤總注水量 (Total Water)</label>
+<span class="text-lg font-extrabold text-[#007fb0]" id="val-total-water">155 g</span>
+</div>
+<input class="w-full my-1" id="total-water" max="600" min="100" onchange="updateLab()" oninput="updateLab()" step="5" type="range" value="155"/>
+<div class="mt-3 pt-2.5 border-t border-sky-200">
+<div class="flex justify-between items-center mb-1">
+<label class="text-xs font-bold text-sky-900" for="retention-rate">🧽 實測吸水率校正</label>
+<span class="text-xs font-extrabold text-amber-700" id="val-retention" style="color:#b45309;">2.78 倍 (10g粉吸走 28g水)</span>
+</div>
+<input class="w-full" id="retention-rate" max="3.20" min="1.80" onchange="updateLab()" oninput="updateLab()" step="0.02" type="range" value="2.78"/>
+</div>
+<div class="mt-2.5 text-xs text-stone-700 bg-white p-2.5 rounded-lg border border-sky-100 leading-relaxed" id="water-math-box">• <b>總注水：155g</b> (比率 1:15.5)｜<b>吸水：-28g</b><br/>• 🥣 <b style="color:#007fb0;">下壺實際咖啡液：約 127 mL</b></div>
+</div>
+<!-- 咖啡粉重量滑桿 -->
+<div class="mb-4 p-3.5 rounded-xl independent-box">
+<div class="flex justify-between items-baseline mb-1">
+<label class="text-sm font-bold text-stone-900" for="dose">⚖️ 咖啡粉重量 (Coffee Dose)</label>
+<span class="text-lg font-extrabold text-amber-700" id="val-dose" style="color:#b45309;">10 g</span>
+</div>
+<input class="w-full my-1.5" id="dose" max="35" min="8" onchange="updateLab()" oninput="updateLab()" step="0.5" type="range" value="10"/>
+<div class="grid grid-cols-5 gap-1 my-1.5">
+<button class="cup-pill text-center" onclick="setDose(10)" type="button">10g</button>
+<button class="cup-pill text-center" onclick="setDose(15)" type="button">15g</button>
+<button class="cup-pill text-center" onclick="setDose(18)" type="button">18g</button>
+<button class="cup-pill text-center" onclick="setDose(20)" type="button">20g</button>
+<button class="cup-pill text-center" onclick="setDose(25)" type="button">25g</button>
+</div>
+</div>
+<!-- CLITON 刻度 -->
+<div class="mb-4 p-3.5 rounded-xl bg-stone-50 border border-stone-200">
+<div class="flex justify-between items-baseline mb-1">
+<label class="text-sm font-bold text-stone-700" for="cliton-step">CLITON KMDJ-12AW 研磨刻度</label>
+<div class="text-right">
+<span class="text-lg font-extrabold text-[#00a4e4]" id="val-step" style="color:#00a4e4;">第 21 檔</span>
+<span class="text-xs text-stone-400 ml-1" id="val-micron">(約 668 μm)</span>
+</div>
+</div>
+<input class="w-full my-1.5" id="cliton-step" max="40" min="1" onchange="updateLab()" oninput="updateLab()" step="1" type="range" value="21"/>
+<div class="flex justify-between text-[11px] text-stone-400"><span>1檔(極細)</span><span>21檔(中焙)</span><span>40檔(粗)</span></div>
+</div>
+<!-- 沖煮水溫 -->
+<div class="mb-4">
+<div class="flex justify-between items-center mb-1">
+<label class="text-sm font-semibold text-stone-700" for="temp">沖煮水溫 (Water Temp)</label>
+<span class="text-sm font-bold text-[#00a4e4]" id="val-temp" style="color:#00a4e4;">90 °C</span>
+</div>
+<input class="w-full" id="temp" max="98" min="80" onchange="updateLab()" oninput="updateLab()" step="1" type="range" value="90"/>
+</div>
+<!-- 注水手法 -->
+<div class="mb-2">
+<label class="text-sm font-semibold text-stone-700 block mb-1.5">注水手法選項 (Pouring Method)</label>
+<div class="grid grid-cols-3 gap-2">
+<button class="mode-btn active text-xs font-medium" id="pour-1" onclick="setPour(1)" type="button">藍瓶四段式<br/><span class="text-[10px] opacity-80">高甜感標準</span></button>
+<button class="mode-btn text-xs font-medium text-stone-600" id="pour-2" onclick="setPour(2)" type="button">中心一刀流<br/><span class="text-[10px] opacity-80">香氣揚/流速快</span></button>
+<button class="mode-btn text-xs font-medium text-stone-600" id="pour-3" onclick="setPour(3)" type="button">點滴三段法<br/><span class="text-[10px] opacity-80">三段注水/深焙</span></button>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-stone-200 bg-sky-50/70 rounded-xl p-3" style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:12px;">
+<div class="text-xs font-bold text-[#007fb0]" id="guide-title">📌 藍瓶四段式注水表 (10g粉 ➔ 注水 155g ➔ 實得 127mL)：</div>
+<div class="overflow-x-auto mt-2">
+<table class="guide-table">
+<thead><tr><th>階段</th><th>計時器</th><th>電子秤目標</th><th>注水動作與實際入杯量</th></tr></thead>
+<tbody id="guide-table-body">
+<tr><td class="font-bold text-[#007fb0]">① 悶蒸</td><td class="font-mono">0:00–0:40</td><td class="font-bold">25 g</td><td>濕潤粉層</td></tr>
+<tr><td class="font-bold text-[#007fb0]">② 二段</td><td class="font-mono">0:40–1:10</td><td class="font-bold">68 g</td><td>同心圓注水</td></tr>
+<tr><td class="font-bold text-[#007fb0]">③ 三段</td><td class="font-mono">1:10–1:40</td><td class="font-bold">115 g</td><td>水位降半續水</td></tr>
+<tr><td class="font-bold text-[#007fb0]">④ 四段</td><td class="font-mono">1:40–1:34</td><td class="font-bold">155 g</td><td>注滿，實得 <b>127mL</b></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- 右側圖表與總表 (7 欄) -->
+<div class="lg:col-span-7 flex flex-col gap-5">
+<!-- 動態萃取率曲線圖 -->
+<div class="card-box !mb-0">
+<div class="flex flex-wrap justify-between items-center mb-2 gap-2">
+<h3 class="text-sm font-bold text-stone-800 m-0">📈 藍瓶濾杯動態萃取率 (EY%) 與流速曲線</h3>
+<div class="flex items-center gap-3 text-xs">
+<span class="flex items-center gap-1 font-semibold" style="color:#00a4e4;">● 實測物理曲線</span>
+<span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold" style="background:#ecfdf5; color:#047857;">綠區：18–22% 金杯帶</span>
+</div>
+</div>
+<div class="w-full overflow-hidden rounded-xl bg-stone-50/60 border border-stone-100 p-2">
+<svg id="native-ey-svg" preserveaspectratio="xMidYMid meet" viewbox="0 0 600 245"><line stroke="#e7e5e4" stroke-width="1" x1="44" x2="552" y1="211" y2="211"></line><text fill="#78706b" font-size="10" text-anchor="end" x="38" y="215">0%</text><line stroke="#e7e5e4" stroke-width="1" x1="44" x2="552" y1="114.5" y2="114.5"></line><text fill="#78706b" font-size="10" text-anchor="end" x="38" y="118.5">14%</text><line stroke="#10b981" stroke-dasharray="4,4" stroke-width="1.5" x1="44" x2="552" y1="86.92857142857142" y2="86.92857142857142"></line><text fill="#047857" font-size="10" text-anchor="end" x="38" y="90.92857142857142">18%</text><line stroke="#10b981" stroke-dasharray="4,4" stroke-width="1.5" x1="44" x2="552" y1="59.35714285714286" y2="59.35714285714286"></line><text fill="#047857" font-size="10" text-anchor="end" x="38" y="63.35714285714286">22%</text><line stroke="#e7e5e4" stroke-width="1" x1="44" x2="552" y1="18" y2="18"></line><text fill="#78706b" font-size="10" text-anchor="end" x="38" y="22">28%</text><rect fill="#10b981" fill-opacity="0.10" height="27.571428571428555" width="508" x="44" y="59.35714285714286"></rect><text fill="#78706b" font-size="10" text-anchor="middle" x="44" y="235">0s</text><text fill="#78706b" font-size="10" text-anchor="middle" x="94.80000000000001" y="235">9s</text><text fill="#78706b" font-size="10" text-anchor="middle" x="145.60000000000002" y="235">19s</text><text fill="#78706b" font-size="10" text-anchor="middle" x="196.4" y="235">28s</text><text fill="#78706b" font-size="10" text-anchor="middle" x="247.20000000000002" y="235">38s</text><text fill="#78706b" font-size="10" text-anchor="middle" x="298" y="235">47s</text><text fill="#78706b" font-size="10" text-anchor="middle" x="348.8" y="235">56s</text><text fill="#78706b" font-size="10" text-anchor="middle" x="399.59999999999997" y="235">66s</text><text fill="#78706b" font-size="10" text-anchor="middle" x="450.40000000000003" y="235">75s</text><text fill="#78706b" font-size="10" text-anchor="middle" x="501.2" y="235">85s</text><text fill="#78706b" font-size="10" text-anchor="middle" x="552" y="235">94s</text><path d="M 44.0,211.0 L 44.0,211.0 L 69.4,186.9 L 94.8,167.6 L 120.2,151.0 L 145.6,137.9 L 171.0,126.2 L 196.4,117.3 L 221.8,109.7 L 247.2,103.5 L 272.6,98.0 L 298.0,93.8 L 323.4,90.4 L 348.8,86.9 L 374.2,84.9 L 399.6,82.8 L 425.0,81.4 L 450.4,80.0 L 475.8,78.7 L 501.2,78.0 L 526.6,76.6 L 552.0,73.1 L 552.0,211.0 Z" fill="#00a4e4" fill-opacity="0.14"></path><path d="M 44.0,211.0 L 69.4,190.6 L 94.8,190.6 L 120.2,190.6 L 145.6,190.6 L 171.0,190.6 L 196.4,190.6 L 221.8,150.6 L 247.2,151.3 L 272.6,152.0 L 298.0,152.4 L 323.4,153.1 L 348.8,153.8 L 374.2,154.5 L 399.6,155.2 L 425.0,155.6 L 450.4,156.3 L 475.8,157.0 L 501.2,157.7 L 526.6,158.4 L 552.0,211.0" fill="none" stroke="#f59e0b" stroke-dasharray="5,4" stroke-width="2"></path><path d="M 44.0,211.0 L 69.4,186.9 L 94.8,167.6 L 120.2,151.0 L 145.6,137.9 L 171.0,126.2 L 196.4,117.3 L 221.8,109.7 L 247.2,103.5 L 272.6,98.0 L 298.0,93.8 L 323.4,90.4 L 348.8,86.9 L 374.2,84.9 L 399.6,82.8 L 425.0,81.4 L 450.4,80.0 L 475.8,78.7 L 501.2,78.0 L 526.6,76.6 L 552.0,73.1" fill="none" stroke="#00a4e4" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path><circle cx="272.6" cy="97.95714285714287" fill="#007fb0" r="5" stroke="#ffffff" stroke-width="2"></circle><text fill="#007fb0" font-size="11" font-weight="bold" x="280.6" y="89.95714285714287">完萃 20.0%</text></svg>
+</div>
+</div>
+<!-- 杯測感官平衡圖 -->
+<div class="card-box !mb-0">
+<div class="flex flex-wrap justify-between items-center mb-3 gap-2">
+<h3 class="text-sm font-bold text-stone-800 m-0">☕ 杯測感官平衡圖 (酸質 / 甜感 / 醇厚度 / 苦韻)</h3>
+<span class="text-xs text-stone-500 font-medium" id="bean-badge-chart">目前豆款：藍瓶 貝拉多諾萬 (Bella Donovan)</span>
+</div>
+<div class="space-y-3.5 py-1">
+<div>
+<div class="flex justify-between text-xs font-bold mb-1"><span class="text-stone-700">🍋 明亮果酸 (Acidity)</span><span class="text-amber-600" id="score-acid-text">58 / 100</span></div>
+<div class="w-full h-5 bg-stone-100 rounded-lg overflow-hidden" style="background:#f5f5f4; height:20px; border-radius:8px;"><div class="bar-fill h-full rounded-lg" id="bar-acid" style="width:58%; height:100%; background:linear-gradient(90deg, #fbbf24, #f59e0b);"></div></div>
+</div>
+<div>
+<div class="flex justify-between text-xs font-bold mb-1"><span class="text-stone-700">🍯 焦糖與果醬甜感 (Sweetness)</span><span class="text-emerald-600" id="score-sweet-text">90 / 100</span></div>
+<div class="w-full h-5 bg-stone-100 rounded-lg overflow-hidden" style="background:#f5f5f4; height:20px; border-radius:8px;"><div class="bar-fill h-full rounded-lg" id="bar-sweet" style="width: 90%; height: 100%; background: linear-gradient(90deg, rgb(52, 211, 153), rgb(16, 185, 129));"></div></div>
+</div>
+<div>
+<div class="flex justify-between text-xs font-bold mb-1"><span class="text-stone-700">🍫 醇厚度與油脂感 (Body)</span><span class="text-purple-600" id="score-body-text">88 / 100</span></div>
+<div class="w-full h-5 bg-stone-100 rounded-lg overflow-hidden" style="background:#f5f5f4; height:20px; border-radius:8px;"><div class="bar-fill h-full rounded-lg" id="bar-body" style="width: 88%; height: 100%; background: linear-gradient(90deg, rgb(167, 139, 250), rgb(139, 92, 246));"></div></div>
+</div>
+<div>
+<div class="flex justify-between text-xs font-bold mb-1"><span class="text-stone-700">🔥 烘焙可可苦韻 (Bitterness)</span><span class="text-rose-600" id="score-bitter-text">50 / 100</span></div>
+<div class="w-full h-5 bg-stone-100 rounded-lg overflow-hidden" style="background:#f5f5f4; height:20px; border-radius:8px;"><div class="bar-fill h-full rounded-lg" id="bar-bitter" style="width: 50%; height: 100%; background: linear-gradient(90deg, rgb(248, 113, 113), rgb(239, 68, 68));"></div></div>
+</div>
+</div>
+</div>
+<!-- 黃金參數總表 -->
+<div class="card-box !mb-0">
+<div class="flex flex-wrap justify-between items-center mb-2 gap-2">
+<div>
+<h3 class="text-sm font-bold text-stone-800 m-0">📋 我的專屬豆單 × CLITON 黃金參數對照總表</h3>
+<p class="text-[11px] text-stone-400 m-0 mt-0.5">點擊任一列可載入該豆款黃金預設；修改後可點「記住此組設定」更新此表</p>
+</div>
+<button class="text-xs font-bold px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 cursor-pointer" onclick="openBeanModal(null)" type="button">➕ 新增豆款</button>
+</div>
+<div class="overflow-x-auto">
+<table class="guide-table">
+<thead><tr><th>專屬豆款 (點擊載入)</th><th>CLITON 刻度</th><th>建議水溫</th><th>粉量與總注水</th><th>實際入杯咖啡液</th><th>管理</th></tr></thead>
+<tbody id="all-beans-table-body">
+<tr class="cursor-pointer hover:bg-sky-50/60 transition active-row font-semibold" onclick="selectBean('bella', true)">
+<td class="font-bold text-stone-800">👉 藍瓶 貝拉多諾萬 (Bella Donovan)<span class="block text-[10px] text-stone-400 font-normal">藍瓶經典中焙</span></td>
+<td class="font-bold text-[#007fb0]">第 21 檔 (668μm)</td>
+<td>90 °C</td>
+<td>10g 粉 ｜ 155g 水</td>
+<td>(-28g) ➔ <b>實得 127mL</b></td>
+<td><button class="px-2 py-1 rounded bg-stone-100 hover:bg-sky-100 text-stone-700 text-[11px] border-0 cursor-pointer" onclick="event.stopPropagation(); openBeanModal('bella')" type="button">✏️ 修改</button></td>
+</tr>
+<tr class="cursor-pointer hover:bg-sky-50/60 transition" onclick="selectBean('hayes', true)">
+<td class="font-bold text-stone-800">藍瓶 海斯谷 (Hayes Valley)<span class="block text-[10px] text-stone-400 font-normal">藍瓶深焙配方</span></td>
+<td class="font-bold text-[#007fb0]">第 25 檔 (758μm)</td>
+<td>85 °C</td>
+<td>10g 粉 ｜ 140g 水</td>
+<td>(-29g) ➔ <b>實得 111mL</b></td>
+<td><button class="px-2 py-1 rounded bg-stone-100 hover:bg-sky-100 text-stone-700 text-[11px] border-0 cursor-pointer" onclick="event.stopPropagation(); openBeanModal('hayes')" type="button">✏️ 修改</button></td>
+</tr>
+<tr class="cursor-pointer hover:bg-sky-50/60 transition" onclick="selectBean('lilo', true)">
+<td class="font-bold text-stone-800">心齋橋 LiLo — Colorful Blend<span class="block text-[10px] text-stone-400 font-normal">大阪心齋橋・淺焙</span></td>
+<td class="font-bold text-[#007fb0]">第 18 檔 (600μm)</td>
+<td>93 °C</td>
+<td>10g 粉 ｜ 160g 水</td>
+<td>(-27g) ➔ <b>實得 133mL</b></td>
+<td><button class="px-2 py-1 rounded bg-stone-100 hover:bg-sky-100 text-stone-700 text-[11px] border-0 cursor-pointer" onclick="event.stopPropagation(); openBeanModal('lilo')" type="button">✏️ 修改</button></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 新增/編輯豆款 Modal -->
+<div class="modal-backdrop hidden" id="bean-modal">
+<div class="bg-white rounded-2xl max-w-lg w-full p-5 shadow-2xl border border-stone-200 max-h-[92vh] overflow-y-auto">
+<div class="flex justify-between items-center pb-3 mb-4 border-b border-stone-200">
+<h3 class="text-base font-bold text-stone-800 m-0" id="modal-title">➕ 新增我的專屬咖啡豆</h3>
+<button class="text-stone-400 hover:text-stone-700 text-lg font-bold bg-transparent border-0 cursor-pointer" onclick="closeBeanModal()" type="button">✕</button>
+</div>
+<div class="space-y-3.5 text-xs">
+<input id="form-bean-key" type="hidden" value=""/>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+<div class="sm:col-span-2"><label class="font-bold text-stone-700 block mb-1">豆款名稱 (必填)</label><input class="form-input" id="form-bean-name" placeholder="例如：藍瓶 巨步 (Giant Steps)" type="text"/></div>
+<div><label class="font-bold text-stone-700 block mb-1">標籤分類</label><input class="form-input" id="form-bean-badge" placeholder="例如：日本淺焙" type="text"/></div>
+</div>
+<div><label class="font-bold text-stone-700 block mb-1">風味描述筆記</label><input class="form-input" id="form-bean-notes" placeholder="例如：衣索比亞日曬｜水蜜桃、茉莉花香" type="text"/></div>
+<div>
+<label class="font-bold text-stone-700 block mb-1">烘焙度基底模板</label>
+<div class="grid grid-cols-3 gap-2">
+<button class="p-2 rounded-lg border border-stone-200 bg-rose-50 text-rose-800 font-bold text-xs cursor-pointer" onclick="applyRoastTemplate('light')" type="button">🌸 淺～中淺焙</button>
+<button class="p-2 rounded-lg border border-stone-200 bg-amber-50 text-amber-800 font-bold text-xs cursor-pointer" onclick="applyRoastTemplate('medium')" type="button">🌰 中焙平衡</button>
+<button class="p-2 rounded-lg border border-stone-200 bg-stone-100 text-stone-800 font-bold text-xs cursor-pointer" onclick="applyRoastTemplate('dark')" type="button">🍫 深焙</button>
+</div>
+<input id="form-roast-type" type="hidden" value="medium"/>
+</div>
+<div class="p-3 rounded-xl bg-sky-50 border border-sky-200 space-y-2.5">
+<div class="font-bold text-sky-900">⚙️ 設定此豆的預設參數</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+<div><label class="text-stone-600 block mb-0.5">基準粉量 (g)</label><input class="form-input" id="form-dose" max="35" min="8" step="0.5" type="number" value="10"/></div>
+<div><label class="text-stone-600 block mb-0.5">CLITON 刻度</label><input class="form-input" id="form-step" max="40" min="1" step="1" type="number" value="21"/></div>
+<div><label class="text-stone-600 block mb-0.5">建議水溫 (°C)</label><input class="form-input" id="form-temp" max="98" min="80" step="1" type="number" value="90"/></div>
+<div><label class="text-stone-600 block mb-0.5">建議總注水 (g)</label><input class="form-input" id="form-water" max="600" min="100" step="5" type="number" value="155"/></div>
+<div><label class="text-stone-600 block mb-0.5">實測吸水率</label><input class="form-input" id="form-retention" max="3.2" min="1.8" step="0.02" type="number" value="2.78"/></div>
+<div><label class="text-stone-600 block mb-0.5">預設注水法</label><select class="form-input" id="form-pour"><option value="1">藍瓶四段式</option><option value="2">中心一刀流</option><option value="3">點滴三段法</option></select></div>
+</div>
+</div>
+</div>
+<div class="flex justify-between items-center mt-5 pt-3 border-t border-stone-200 gap-2">
+<button class="hidden px-3 py-2 rounded-xl bg-rose-100 text-rose-700 font-bold text-xs border-0 cursor-pointer" id="btn-delete-bean" onclick="deleteCurrentModalBean()" type="button">🗑️ 刪除此豆款</button>
+<div class="flex gap-2 ml-auto">
+<button class="px-4 py-2 rounded-xl bg-stone-100 text-stone-700 font-semibold text-xs border-0 cursor-pointer" onclick="closeBeanModal()" type="button">取消</button>
+<button class="px-4 py-2 rounded-xl text-white font-bold text-xs border-0 cursor-pointer" onclick="saveBeanFromModal()" style="background:#00a4e4;" type="button">儲存豆款</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  let BEAN_DB = {
+    bella: { name: "藍瓶 貝拉多諾萬 (Bella Donovan)", badge: "藍瓶經典中焙", roastType: "medium", notes: "衣索比亞 × 蘇門答臘｜覆盆子果醬、黑巧克力、蜜糖醇厚感", targetEY: 20.0, waterRetention: 2.78, baseAcid: 58, baseSweet: 90, baseBody: 78, baseBitter: 24, idealDose: 10, idealStep: 21, idealTemp: 90, idealPour: 1, idealWater: 155 },
+    hayes: { name: "藍瓶 海斯谷 (Hayes Valley)", badge: "藍瓶深焙配方", roastType: "dark", notes: "經典義式深焙手沖｜烘焙可可、焦糖橙皮、極高油脂感與低酸度", targetEY: 20.0, waterRetention: 2.90, baseAcid: 28, baseSweet: 85, baseBody: 92, baseBitter: 38, idealDose: 10, idealStep: 25, idealTemp: 85, idealPour: 3, idealWater: 140 },
+    lilo: { name: "心齋橋 LiLo — Colorful Blend", badge: "大阪心齋橋・淺焙", roastType: "light", notes: "日本職人繽紛果香｜熱帶水果、柑橘花香、果汁般明亮酸甜感", targetEY: 20.0, waterRetention: 2.68, baseAcid: 86, baseSweet: 88, baseBody: 58, baseBitter: 12, idealDose: 10, idealStep: 18, idealTemp: 93, idealPour: 1, idealWater: 160 }
+  };
+  let currentBean = 'bella';
+  let currentPour = 1;
+
+  function clamp(val, min, max) { return Math.max(min, Math.min(max, val)); }
+  function stepToMicron(step) { return Math.round(195 + step * 22.5); }
+
+  function showToast(htmlMsg) {
+    const toast = document.getElementById('save-toast');
+    const toastText = document.getElementById('save-toast-text');
+    if (!toast || !toastText) return;
+    toastText.innerHTML = htmlMsg;
+    toast.classList.remove('hidden');
+  }
+
+  function renderBeansUI() {
+    const container = document.getElementById('bean-cards-container');
+    const tableBody = document.getElementById('all-beans-table-body');
+    if (!container || !tableBody) return;
+
+    let cardsHtml = '', rowsHtml = '';
+    const keys = Object.keys(BEAN_DB);
+    if (!BEAN_DB[currentBean] && keys.length > 0) currentBean = keys[0];
+
+    keys.forEach(key => {
+      const b = BEAN_DB[key];
+      const isActive = (key === currentBean);
+      let badgeStyle = 'background:#fef3c7; color:#92400e;';
+      if (b.roastType === 'dark') badgeStyle = 'background:#292524; color:#fde68a;';
+      else if (b.roastType === 'light') badgeStyle = 'background:#ffe4e6; color:#be123c;';
+
+      cardsHtml += `
+        <div onclick="selectBean('${key}', true)" class="bean-card ${isActive ? 'active' : ''}">
+          <div>
+            <div class="flex justify-between items-center mb-1 gap-1">
+              <span class="px-2 py-0.5 text-[11px] font-semibold rounded" style="${badgeStyle} padding:2px 6px; border-radius:4px;">${b.badge || ''}</span>
+              <span class="text-xs font-mono text-stone-500 font-semibold">${b.idealStep}檔/${b.idealTemp}°C</span>
+            </div>
+            <h3 class="font-bold text-sm md:text-base text-stone-800 m-0 mt-1 leading-snug">${b.name}</h3>
+            <p class="text-xs text-stone-500 mt-1 mb-0 line-clamp-2">${b.notes || ''}</p>
+          </div>
+          <div class="mt-2 pt-1.5 border-t border-stone-100 flex justify-between items-center text-[11px] text-stone-500">
+            <span>粉 ${b.idealDose}g ｜ 水 ${b.idealWater || 155}g</span>
+            <span class="text-[#007fb0] font-semibold">${isActive ? '● 使用中' : '點擊載入'}</span>
+          </div>
+        </div>
+      `;
+
+      const absW = Math.round(b.idealDose * (b.waterRetention || 2.78));
+      const yieldW = Math.max(30, (b.idealWater || 155) - absW);
+      const micron = stepToMicron(b.idealStep);
+
+      rowsHtml += `
+        <tr onclick="selectBean('${key}', true)" class="cursor-pointer hover:bg-sky-50/60 transition ${isActive ? 'active-row font-semibold' : ''}">
+          <td class="font-bold text-stone-800">${isActive ? '👉 ' : ''}${b.name}<span class="block text-[10px] text-stone-400 font-normal">${b.badge || ''}</span></td>
+          <td class="font-bold text-[#007fb0]">第 ${b.idealStep} 檔 (${micron}μm)</td>
+          <td>${b.idealTemp} °C</td>
+          <td>${b.idealDose}g 粉 ｜ ${b.idealWater || 155}g 水</td>
+          <td>(-${absW}g) ➔ <b>實得 ${yieldW}mL</b></td>
+          <td><button onclick="event.stopPropagation(); openBeanModal('${key}')" type="button" class="px-2 py-1 rounded bg-stone-100 hover:bg-sky-100 text-stone-700 text-[11px] border-0 cursor-pointer">✏️ 修改</button></td>
+        </tr>
+      `;
+    });
+
+    container.innerHTML = cardsHtml;
+    tableBody.innerHTML = rowsHtml;
+  }
+
+  function applyRoastTemplate(roastType) {
+    document.getElementById('form-roast-type').value = roastType;
+    document.getElementById('form-dose').value = 10;
+    if (roastType === 'light') {
+      document.getElementById('form-step').value = 18; document.getElementById('form-temp').value = 93;
+      document.getElementById('form-water').value = 160; document.getElementById('form-retention').value = 2.68; document.getElementById('form-pour').value = 1;
+    } else if (roastType === 'medium') {
+      document.getElementById('form-step').value = 21; document.getElementById('form-temp').value = 90;
+      document.getElementById('form-water').value = 155; document.getElementById('form-retention').value = 2.78; document.getElementById('form-pour').value = 1;
+    } else {
+      document.getElementById('form-step').value = 25; document.getElementById('form-temp').value = 85;
+      document.getElementById('form-water').value = 140; document.getElementById('form-retention').value = 2.90; document.getElementById('form-pour').value = 3;
+    }
+  }
+
+  function openBeanModal(beanKey) {
+    const modal = document.getElementById('bean-modal');
+    const delBtn = document.getElementById('btn-delete-bean');
+    if (!modal) return;
+    if (beanKey && BEAN_DB[beanKey]) {
+      const b = BEAN_DB[beanKey];
+      document.getElementById('modal-title').textContent = `✏️ 編輯豆款：${b.name}`;
+      document.getElementById('form-bean-key').value = beanKey;
+      document.getElementById('form-bean-name').value = b.name;
+      document.getElementById('form-bean-badge').value = b.badge || '';
+      document.getElementById('form-bean-notes').value = b.notes || '';
+      document.getElementById('form-roast-type').value = b.roastType || 'medium';
+      document.getElementById('form-dose').value = b.idealDose || 10;
+      document.getElementById('form-step').value = b.idealStep || 21;
+      document.getElementById('form-temp').value = b.idealTemp || 90;
+      document.getElementById('form-water').value = b.idealWater || 155;
+      document.getElementById('form-retention').value = b.waterRetention || 2.78;
+      document.getElementById('form-pour').value = b.idealPour || 1;
+      if (Object.keys(BEAN_DB).length > 1) delBtn.classList.remove('hidden'); else delBtn.classList.add('hidden');
+    } else {
+      document.getElementById('modal-title').textContent = '➕ 新增我的專屬咖啡豆';
+      document.getElementById('form-bean-key').value = '';
+      document.getElementById('form-bean-name').value = '';
+      document.getElementById('form-bean-badge').value = '自訂新豆';
+      document.getElementById('form-bean-notes').value = '';
+      document.getElementById('form-dose').value = document.getElementById('dose').value || 10;
+      document.getElementById('form-step').value = document.getElementById('cliton-step').value || 21;
+      document.getElementById('form-temp').value = document.getElementById('temp').value || 90;
+      document.getElementById('form-water').value = document.getElementById('total-water').value || 155;
+      document.getElementById('form-retention').value = document.getElementById('retention-rate').value || 2.78;
+      document.getElementById('form-pour').value = currentPour || 1;
+      delBtn.classList.add('hidden');
+    }
+    modal.classList.remove('hidden');
+  }
+
+  function closeBeanModal() { document.getElementById('bean-modal').classList.add('hidden'); }
+
+  function saveBeanFromModal() {
+    const rawName = document.getElementById('form-bean-name').value.trim();
+    if (!rawName) { document.getElementById('form-bean-name').focus(); return; }
+    let key = document.getElementById('form-bean-key').value;
+    const isNew = !key;
+    if (isNew) key = 'bean_' + Date.now();
+    const roastType = document.getElementById('form-roast-type').value || 'medium';
+    BEAN_DB[key] = {
+      name: rawName, badge: document.getElementById('form-bean-badge').value.trim() || '專屬配方',
+      roastType: roastType, notes: document.getElementById('form-bean-notes').value.trim() || '自訂配方',
+      targetEY: 20.0, waterRetention: clamp(parseFloat(document.getElementById('form-retention').value) || 2.78, 1.8, 3.2),
+      baseAcid: roastType === 'light' ? 86 : (roastType === 'dark' ? 28 : 58),
+      baseSweet: 90, baseBody: roastType === 'dark' ? 92 : (roastType === 'light' ? 58 : 78), baseBitter: roastType === 'dark' ? 38 : (roastType === 'light' ? 12 : 24),
+      idealDose: clamp(parseFloat(document.getElementById('form-dose').value) || 10, 8, 35),
+      idealStep: clamp(parseInt(document.getElementById('form-step').value, 10) || 21, 1, 40),
+      idealTemp: clamp(parseInt(document.getElementById('form-temp').value, 10) || 90, 80, 98),
+      idealWater: clamp(parseInt(document.getElementById('form-water').value, 10) || 155, 100, 600),
+      idealPour: parseInt(document.getElementById('form-pour').value, 10) || 1
+    };
+    currentBean = key;
+    closeBeanModal(); renderBeansUI(); applyBestRecipe();
+    showToast(`✅ 已儲存豆款「${rawName}」！`);
+  }
+
+  function deleteCurrentModalBean() {
+    const key = document.getElementById('form-bean-key').value;
+    if (!key || !BEAN_DB[key] || Object.keys(BEAN_DB).length <= 1) return;
+    delete BEAN_DB[key]; currentBean = Object.keys(BEAN_DB)[0];
+    closeBeanModal(); renderBeansUI(); applyBestRecipe();
+  }
+
+  function saveCurrentSlidersToBean() {
+    const b = BEAN_DB[currentBean];
+    if (!b) return;
+    b.idealDose = parseFloat(document.getElementById('dose').value) || 10;
+    b.idealStep = parseInt(document.getElementById('cliton-step').value, 10) || 21;
+    b.idealTemp = parseFloat(document.getElementById('temp').value) || 90;
+    b.idealWater = parseInt(document.getElementById('total-water').value, 10) || 155;
+    b.waterRetention = parseFloat(document.getElementById('retention-rate').value) || 2.78;
+    b.idealPour = currentPour;
+    b.targetEY = parseFloat(document.getElementById('kpi-ey').textContent) || 20.0;
+    renderBeansUI(); updateLab();
+    showToast(`📌 已將目前設定完整存入「${b.name}」！`);
+  }
+
+  function setDose(targetDose) {
+    document.getElementById('dose').value = targetDose;
+    updateLab();
+  }
+
+  function setTargetBeverageMl(targetMl) {
+    const b = BEAN_DB[currentBean] || BEAN_DB.bella;
+    const retentionRate = parseFloat(document.getElementById('retention-rate').value) || 2.78;
+    let bestDose = targetMl / 12.5;
+    bestDose = clamp(Math.round(bestDose * 2) / 2, 8, 35);
+    let bestStep = b.idealStep || 21;
+    let bestWater = Math.round(targetMl + bestDose * retentionRate);
+
+    document.getElementById('dose').value = bestDose;
+    document.getElementById('cliton-step').value = bestStep;
+    document.getElementById('total-water').value = clamp(bestWater, 100, 600);
+
+    b.targetEY = 20.0;
+    updateLab();
+    showToast(`🎯 已設定容量 <b>${targetMl} mL</b> ➔ 鎖定 20.0% 黃金杯`);
+  }
+
+  function restoreThreeBeans10gGold() {
+    BEAN_DB.bella = { name: "藍瓶 貝拉多諾萬 (Bella Donovan)", badge: "藍瓶經典中焙", roastType: "medium", notes: "衣索比亞 × 蘇門答臘｜覆盆子果醬、黑巧克力、蜜糖醇厚感", targetEY: 20.0, waterRetention: 2.78, baseAcid: 58, baseSweet: 90, baseBody: 78, baseBitter: 24, idealDose: 10, idealStep: 21, idealTemp: 90, idealPour: 1, idealWater: 155 };
+    BEAN_DB.hayes = { name: "藍瓶 海斯谷 (Hayes Valley)", badge: "藍瓶深焙配方", roastType: "dark", notes: "經典義式深焙手沖｜烘焙可可、焦糖橙皮、極高油脂感與低酸度", targetEY: 20.0, waterRetention: 2.90, baseAcid: 28, baseSweet: 85, baseBody: 92, baseBitter: 38, idealDose: 10, idealStep: 25, idealTemp: 85, idealPour: 3, idealWater: 140 };
+    BEAN_DB.lilo  = { name: "心齋橋 LiLo — Colorful Blend", badge: "大阪心齋橋・淺焙", roastType: "light", notes: "日本職人繽紛果香｜熱帶水果、柑橘花香、果汁般明亮酸甜感", targetEY: 20.0, waterRetention: 2.68, baseAcid: 86, baseSweet: 88, baseBody: 58, baseBitter: 12, idealDose: 10, idealStep: 18, idealTemp: 93, idealPour: 1, idealWater: 160 };
+    if (!BEAN_DB[currentBean]) currentBean = 'bella';
+    renderBeansUI(); applyBestRecipe();
+    showToast('🏆 已還原三款豆至 10g 粉 ＆ 20.0% 黃金金杯標準！');
+  }
+
+  function renderNativeSVGChart(labels, eyData, flowData, brewTime, finalEY) {
+    const svg = document.getElementById('native-ey-svg');
+    if (!svg) return;
+    const W = 600, H = 245;
+    const padL = 44, padR = 48, padT = 18, padB = 34;
+    const plotW = W - padL - padR, plotH = H - padT - padB;
+    
+    const maxEY = Math.max(28, Math.ceil(finalEY * 1.15 / 2) * 2);
+    const maxFlow = 5.5, n = labels.length;
+    const xAt = (i) => padL + (i / (n - 1)) * plotW;
+    const yEY = (val) => padT + plotH - (clamp(val, 0, maxEY) / maxEY) * plotH;
+    const yFlow = (val) => padT + plotH - (clamp(val, 0, maxFlow) / maxFlow) * plotH;
+    const y22 = yEY(22), y18 = yEY(18);
+    let html = '';
+
+    [0, Math.round(maxEY*0.5), 18, 22, maxEY].filter((v, idx, arr) => arr.indexOf(v) === idx).sort((a,b)=>a-b).forEach(t => {
+      if (t > maxEY) return;
+      const y = yEY(t);
+      const isGold = (t === 18 || t === 22);
+      html += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="${isGold ? '#10b981' : '#e7e5e4'}" stroke-width="${isGold ? '1.5' : '1'}" ${isGold ? 'stroke-dasharray="4,4"' : ''} />`;
+      html += `<text x="${padL - 6}" y="${y + 4}" text-anchor="end" font-size="10" fill="${isGold ? '#047857' : '#78706b'}">${t}%</text>`;
+    });
+
+    html += `<rect x="${padL}" y="${y22}" width="${plotW}" height="${y18 - y22}" fill="#10b981" fill-opacity="0.10" />`;
+
+    labels.forEach((lab, i) => {
+      if (i % 2 === 0 || i === n - 1) html += `<text x="${xAt(i)}" y="${H - 10}" text-anchor="middle" font-size="10" fill="#78706b">${lab}</text>`;
+    });
+
+    let eyPoints = [], flowPoints = [];
+    for (let i = 0; i < n; i++) {
+      eyPoints.push(`${xAt(i).toFixed(1)},${yEY(eyData[i]).toFixed(1)}`);
+      flowPoints.push(`${xAt(i).toFixed(1)},${yFlow(flowData[i]).toFixed(1)}`);
+    }
+
+    const isOverExtracted = finalEY > 22.0;
+    const lineColor = isOverExtracted ? '#e11d48' : '#00a4e4';
+    const areaColor = isOverExtracted ? '#ffe4e6' : '#00a4e4';
+
+    html += `<path d="M ${xAt(0).toFixed(1)},${yEY(0).toFixed(1)} L ` + eyPoints.join(' L ') + ` L ${xAt(n - 1).toFixed(1)},${yEY(0).toFixed(1)} Z" fill="${areaColor}" fill-opacity="${isOverExtracted ? '0.22' : '0.14'}" />`;
+    html += `<path d="M ` + flowPoints.join(' L ') + `" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5,4" />`;
+    html += `<path d="M ` + eyPoints.join(' L ') + `" fill="none" stroke="${lineColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />`;
+
+    const endIdx = Math.min(n - 1, Math.round(brewTime / 10));
+    const endX = xAt(endIdx), endY = yEY(eyData[endIdx]);
+    html += `<circle cx="${endX}" cy="${endY}" r="5" fill="${isOverExtracted ? '#9f1239' : '#007fb0'}" stroke="#ffffff" stroke-width="2" />`;
+    html += `<text x="${Math.min(W - padR - 55, endX + 8)}" y="${Math.max(padT + 12, endY - 8)}" font-size="11" font-weight="bold" fill="${isOverExtracted ? '#9f1239' : '#007fb0'}">完萃 ${finalEY.toFixed(1)}%</text>`;
+    svg.innerHTML = html;
+  }
+
+  function selectBean(beanKey, autoApplyPreset) {
+    if (!BEAN_DB[beanKey]) return;
+    currentBean = beanKey; renderBeansUI();
+    if (autoApplyPreset) applyBestRecipe(); else updateLab();
+  }
+
+  function setPour(pourMode) {
+    currentPour = pourMode;
+    [1, 2, 3].forEach(i => {
+      const btn = document.getElementById(`pour-${i}`);
+      if (!btn) return;
+      if (i === pourMode) btn.classList.add('active'); else btn.classList.remove('active');
+    });
+    updateLab();
+  }
+
+  function applyBestRecipe() {
+    const b = BEAN_DB[currentBean];
+    if (!b) return;
+    document.getElementById('dose').value = b.idealDose || 10;
+    document.getElementById('cliton-step').value = b.idealStep || 21;
+    document.getElementById('temp').value = b.idealTemp || 90;
+    document.getElementById('total-water').value = b.idealWater || 155;
+    if (document.getElementById('retention-rate')) document.getElementById('retention-rate').value = b.waterRetention || 2.78;
+    setPour(b.idealPour || 1);
+  }
+
+  function updateLab() {
+    const b = BEAN_DB[currentBean];
+    if (!b) return;
+
+    let dose = parseFloat(document.getElementById('dose').value) || 10;
+    let step = parseInt(document.getElementById('cliton-step').value, 10) || 21;
+    const micron = stepToMicron(step);
+    const temp = parseFloat(document.getElementById('temp').value) || 90;
+    let totalWater = parseInt(document.getElementById('total-water').value, 10) || 155;
+    const retentionRate = parseFloat(document.getElementById('retention-rate').value) || 2.78;
+
+    const defB = BEAN_DB[currentBean] || { idealDose: 10, idealStep: 21, idealTemp: 90, idealWater: 155 };
+    const originDose = defB.idealDose || 10;
+    const originStep = defB.idealStep || 21;
+    const originTemp = defB.idealTemp || 90;
+    const originWater = defB.idealWater || 155;
+
+    const pourFlowFactor = currentPour === 1 ? 1.00 : (currentPour === 2 ? 1.18 : 0.86);
+    let clogFactor = (b.roastType === 'dark' && step < 21) ? 0.75 : 1.0;
+    const bedDepthFactor = Math.pow(10 / dose, 0.22);
+    const tempViscosity = 1 + 0.011 * (temp - 90);
+
+    const avgFlow = clamp(1.65 * Math.pow(micron / 668, 1.55) * tempViscosity * pourFlowFactor * clogFactor * bedDepthFactor, 0.50, 5.2);
+    const brewTime = Math.round(totalWater / avgFlow);
+
+    const stepDiff = originStep - step;
+    const doseDiff = dose - originDose;
+    const waterDiff = totalWater - originWater;
+    const tempDiff = temp - originTemp;
+
+    let finalEY = 20.0 + (stepDiff * 0.45) + (doseDiff * 0.22) - (waterDiff * 0.018) + (tempDiff * 0.12);
+    finalEY = clamp(finalEY, 10.0, 28.0);
+
+    const absorbedWater = Math.round(dose * retentionRate);
+    const beverageWeight = Math.max(20, totalWater - absorbedWater);
+    const computedRatio = (totalWater / dose).toFixed(1);
+
+    const extractedSolidsGrams = (finalEY / 100) * dose;
+    const tds = (extractedSolidsGrams / beverageWeight) * 100;
+
+    document.getElementById('val-total-water').textContent = `${totalWater} g`;
+    const doseStr = Number.isInteger(dose) ? `${dose}` : `${dose.toFixed(1)}`;
+    document.getElementById('val-dose').textContent = `${doseStr} g`;
+    document.getElementById('val-step').textContent = `第 ${step} 檔`;
+    document.getElementById('val-micron').textContent = `(約 ${micron} μm)`;
+    document.getElementById('val-temp').textContent = `${temp} °C`;
+    document.getElementById('bean-badge-chart').textContent = `目前豆款：${b.name}`;
+    document.getElementById('val-retention').textContent = `${retentionRate.toFixed(2)} 倍 (${doseStr}g粉吸走 ${absorbedWater}g水)`;
+
+    const waterBox = document.getElementById('water-math-box');
+    if (waterBox) {
+      waterBox.innerHTML = `• <b>總注水：${totalWater}g</b> (比率 1:${computedRatio})｜<b>吸水：-${absorbedWater}g</b><br>• 🥣 <b style="color:#007fb0;">下壺實際咖啡液：約 ${beverageWeight} mL</b>`;
+    }
+
+    const acidScore = Math.round(clamp((b.baseAcid || 58) + 14 * (20.0 - finalEY) * 0.25 + 0.5 * (originTemp - temp), 10, 99));
+    const sweetScore = Math.round(clamp((b.baseSweet || 90) - 4.8 * Math.pow(finalEY - 20.0, 2), 15, 99));
+    const bodyScore = Math.round(clamp((b.baseBody || 78) + 32 * (tds - 1.25), 15, 99));
+    const bitterScore = Math.round(clamp((b.baseBitter || 24) + 5.5 * Math.pow(Math.max(0, finalEY - 17.0), 1.4), 5, 99));
+
+    document.getElementById('kpi-ey').textContent = `${finalEY.toFixed(1)}%`;
+    document.getElementById('kpi-tds').textContent = `${tds.toFixed(2)}%`;
+    document.getElementById('kpi-water-out').textContent = `${totalWater}g ➔ ${beverageWeight}mL`;
+    document.getElementById('kpi-water-desc').textContent = `實測吸水 ${absorbedWater}g｜流速 ${avgFlow.toFixed(2)} mL/s`;
+
+    const statusEl = document.getElementById('kpi-status');
+    const flavorEl = document.getElementById('kpi-flavor');
+    const adviceEl = document.getElementById('kpi-advice');
+    const mins = Math.floor(brewTime / 60), secs = brewTime % 60, timeStr = `${mins}分${secs < 10 ? '0' : ''}${secs}秒`;
+
+    if (finalEY < 18.0) {
+      statusEl.textContent = '萃取不足 (< 18%)';
+      statusEl.className = 'inline-block mt-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-800';
+      flavorEl.textContent = '酸質尖銳、口感偏水';
+      adviceEl.textContent = `${timeStr}｜請縮小粉水比或調細刻度`;
+    } else if (finalEY <= 22.0) {
+      statusEl.textContent = '✨ 金杯完美萃取區間';
+      statusEl.className = 'inline-block mt-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-700';
+      flavorEl.textContent = b.notes ? b.notes.split('｜')[1] || '果醬酸甜與平衡感極佳' : '果醬酸甜與平衡感極佳';
+      adviceEl.textContent = `預計 ${timeStr}｜完美金杯！`;
+    } else {
+      statusEl.textContent = '過度萃取 (> 22%)';
+      statusEl.className = 'inline-block mt-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-rose-100 text-rose-700';
+      flavorEl.textContent = '苦澀感強烈、尾韻乾澀';
+      adviceEl.textContent = `${timeStr}｜請將 CLITON 刻度調粗！`;
+    }
+
+    const labels = [], eySeries = [], flowSeries = [];
+    const totalPoints = 20;
+    for (let i = 0; i <= totalPoints; i++) {
+      const t = Math.round((i / totalPoints) * Math.max(60, brewTime));
+      labels.push(`${t}s`);
+      if (t === 0) { eySeries.push(0); flowSeries.push(0); }
+      else if (i === totalPoints) { eySeries.push(Number(finalEY.toFixed(1))); flowSeries.push(0); }
+      else {
+        const progress = i / totalPoints;
+        const curEY = finalEY * (1 - Math.exp(-3.8 * progress));
+        const curFlow = t <= 30 ? avgFlow * 0.35 : avgFlow * (1.12 - 0.22 * progress);
+        eySeries.push(Number(curEY.toFixed(1)));
+        flowSeries.push(Number(curFlow.toFixed(2)));
+      }
+    }
+    renderNativeSVGChart(labels, eySeries, flowSeries, brewTime, finalEY);
+    updatePourGuide(doseStr, totalWater, beverageWeight, brewTime);
+
+    document.getElementById('bar-acid').style.width = `${acidScore}%`;
+    document.getElementById('score-acid-text').textContent = `${acidScore} / 100`;
+    document.getElementById('bar-sweet').style.width = `${sweetScore}%`;
+    document.getElementById('score-sweet-text').textContent = `${sweetScore} / 100`;
+    document.getElementById('bar-body').style.width = `${bodyScore}%`;
+    document.getElementById('score-body-text').textContent = `${bodyScore} / 100`;
+    document.getElementById('bar-bitter').style.width = `${bitterScore}%`;
+    document.getElementById('score-bitter-text').textContent = `${bitterScore} / 100`;
+  }
+
+  function updatePourGuide(doseStr, totalWater, beverageWeight, brewTime) {
+    const titleEl = document.getElementById('guide-title');
+    const tbodyEl = document.getElementById('guide-table-body');
+    if (!titleEl || !tbodyEl) return;
+    const doseVal = parseFloat(doseStr) || 10;
+    const w1 = Math.round(doseVal * 2.5), w2 = Math.round(totalWater * 0.44), w3 = Math.round(totalWater * 0.74);
+    const mins = Math.floor(brewTime / 60), secs = brewTime % 60;
+    
+    let pourName = currentPour === 3 ? '點滴三段法' : (currentPour === 2 ? '中心一刀流' : '藍瓶四段式');
+    titleEl.textContent = `📌 ${pourName}注水表 (${doseStr}g粉 ➔ 注水 ${totalWater}g ➔ 實得 ${beverageWeight}mL)：`;
+    
+    if (currentPour === 3) {
+      const s1 = Math.round(totalWater * 0.33), s2 = Math.round(totalWater * 0.66);
+      tbodyEl.innerHTML = `
+        <tr><td class="font-bold text-[#007fb0]">① 第一段</td><td class="font-mono">0:00–0:45</td><td class="font-bold">${s1} g</td><td>中心小水流悶蒸</td></tr>
+        <tr><td class="font-bold text-[#007fb0]">② 第二段</td><td class="font-mono">0:45–1:20</td><td class="font-bold">${s2} g</td><td>穩定同心圓注水</td></tr>
+        <tr><td class="font-bold text-[#007fb0]">③ 第三段</td><td class="font-mono">1:20–${mins}:${secs<10?'0':''}${secs}</td><td class="font-bold">${totalWater} g</td><td>收尾，實得 <b>${beverageWeight}mL</b></td></tr>
+      `;
+    } else {
+      tbodyEl.innerHTML = `
+        <tr><td class="font-bold text-[#007fb0]">① 悶蒸</td><td class="font-mono">0:00–0:40</td><td class="font-bold">${w1} g</td><td>濕潤粉層</td></tr>
+        <tr><td class="font-bold text-[#007fb0]">② 二段</td><td class="font-mono">0:40–1:10</td><td class="font-bold">${w2} g</td><td>同心圓注水</td></tr>
+        <tr><td class="font-bold text-[#007fb0]">③ 三段</td><td class="font-mono">1:10–1:40</td><td class="font-bold">${w3} g</td><td>水位降半續水</td></tr>
+        <tr><td class="font-bold text-[#007fb0]">④ 四段</td><td class="font-mono">1:40–${mins}:${secs<10?'0':''}${secs}</td><td class="font-bold">${totalWater} g</td><td>注滿，實得 <b>${beverageWeight}mL</b></td></tr>
+      `;
+    }
+  }
+
+  function downloadStandaloneApp() {
+    try {
+      let fullHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = '藍瓶與LiLo手沖實驗室_v14.4離線自癒版.html';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+      showToast('🎉 永久專案檔下載成功！');
+    } catch (e) {}
+  }
+
+  window.onload = function() {
+    renderBeansUI();
+    selectBean('bella', true);
+  };
+</script>
+
+<script>
+// PWA offline cache: install once while online, then the app shell can load offline.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./service-worker.js').catch(function (err) {
+      console.warn('離線快取尚未啟用：', err);
+    });
+  });
+}
+</script>
+</body></html>
